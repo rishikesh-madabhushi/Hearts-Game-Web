@@ -4,12 +4,6 @@
 # Log file
 *.log
 
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
 # Package Files #
 *.jar
 *.war
@@ -19,5 +13,20 @@
 *.tar.gz
 *.rar
 
+# Intellij
+.idea/
+*.iml
+*.iws
+out/
+
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+# Angular
+/dist/
+/bazel-out
+/integration/bazel/bazel-*
+e2e_test.*
+*.log
+node_modules
+tools/gulp-tasks/cldr/cldr-data/
