@@ -1,5 +1,6 @@
 package com.llwantedll.webhearts.controllers;
 
+import com.llwantedll.webhearts.models.configs.ConfigurationData;
 import com.llwantedll.webhearts.models.dtolayer.wrappers.UserForm;
 import com.llwantedll.webhearts.models.services.AuthenticationService;
 import com.llwantedll.webhearts.models.utils.AuthUtils;
@@ -18,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 
 @RestController
-@CrossOrigin("http://localhost:4200")
+@CrossOrigin(ConfigurationData.CROSS_ORIGIN_URL)
 public class AuthenticationController {
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
@@ -40,7 +41,7 @@ public class AuthenticationController {
 
     @PostMapping(value = "/user", consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
     public Principal user(HttpServletRequest request) {
-        return () -> AuthUtils.getTokenFromHeader(request.getHeader(AUTHORIZATION_HEADER));
+        return () -> AuthUtils.getNameFromHeader(request.getHeader(AUTHORIZATION_HEADER));
     }
 
     @PostMapping(value = "/register",

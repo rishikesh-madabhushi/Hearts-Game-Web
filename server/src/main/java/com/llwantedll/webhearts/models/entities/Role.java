@@ -1,6 +1,8 @@
 package com.llwantedll.webhearts.models.entities;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
@@ -9,6 +11,9 @@ import java.io.Serializable;
 public class Role implements Serializable {
 
     @Id
+    private ObjectId id;
+
+    @Indexed(unique = true, sparse = true)
     private String key;
 
     public Role(String key) {
@@ -24,5 +29,13 @@ public class Role implements Serializable {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public ObjectId getId() {
+        return id;
+    }
+
+    public void setId(ObjectId id) {
+        this.id = id;
     }
 }

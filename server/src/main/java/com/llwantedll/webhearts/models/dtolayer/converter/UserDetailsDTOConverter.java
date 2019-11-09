@@ -8,6 +8,7 @@ import com.llwantedll.webhearts.models.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,12 +39,12 @@ public class UserDetailsDTOConverter implements DTOConverter<User, UserDetailsWr
         userDetailsWrapper.setLogin(entity.getLogin());
         userDetailsWrapper.setPassword(entity.getPassword());
 
-        Set<Role> roles = entity.getRoles();
+        List<Role> roles = entity.getRoles();
 
-        Set<RoleWrapper> roleWrappers = roles
+        List<RoleWrapper> roleWrappers = roles
                 .stream()
                 .map(roleDTOConverter::backward)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
 
         userDetailsWrapper.setRoles(roleWrappers);
 

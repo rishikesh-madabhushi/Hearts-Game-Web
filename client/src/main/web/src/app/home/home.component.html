@@ -1,8 +1,8 @@
 <div class="main-menu">
   <div class="menu-content">
-    <p>Hello, {{userName}}!</p>
-    <p><a class="btn btn-primary btn-lg btn-block">New Game</a></p>
-    <p><a class="btn btn-primary btn-lg btn-block">Find Game</a></p>
+    <p>Hello, <b>{{userName}}!</b></p>
+    <p><a class="btn btn-primary btn-lg btn-block" [routerLink]="['/create_game']">New Game</a></p>
+    <p><a class="btn btn-primary btn-lg btn-block" [routerLink]="['/search_game']">Find Game</a></p>
     <p><a class="btn btn-primary btn-lg btn-block">Statistics</a></p>
     <p><a class="btn btn-default btn-lg btn-block" [routerLink]="['/login']" (click)="logout()">Log Out</a></p>
   </div>

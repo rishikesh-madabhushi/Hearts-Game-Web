@@ -1,0 +1,58 @@
+/* You can add global styles to this file, and also import other style files */
+
+$border-default: #2f030f;
+$background-default: #ffe8d6;
+
+.main-menu {
+  text-align: center;
+}
+
+.menu-content {
+  width: auto;
+  padding: 1rem;
+  margin: 1rem;
+  border: 1px #dddddd;
+  border-radius: 10px;
+  display: inline-block;
+  background-color: $background-default;
+}
+
+.btn-default{
+  background-color: #fbfdf3;
+  border: $border-default 1px solid;
+  color: $border-default;
+}
+
+.btn-default:hover{
+  background-color: #fde0d8;
+  border: $border-default 1px solid;
+  color: $border-default;
+}
+
+.btn-primary{
+  background-color: #fbfdf3;
+  border: $border-default 1px solid;
+  color: $border-default;
+}
+
+.btn-primary:hover{
+  background-color: #a7a8a2;
+}
+
+.form-control{
+  background: #fbfdf3;
+}
+
+.form-control:focus{
+  outline: 1px $border-default solid;
+  border-color: $border-default;
+  box-shadow: none;
+}
+
+.page-panel{
+  margin: 1.5rem;
+  padding: 1rem;
+  border: 1px $border-default solid;
+  border-radius: 10px;
+  background: $background-default;
+}

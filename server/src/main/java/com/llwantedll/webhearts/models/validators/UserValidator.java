@@ -9,6 +9,8 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
+import java.util.Objects;
+
 @Component
 public class UserValidator implements Validator {
 
@@ -16,6 +18,13 @@ public class UserValidator implements Validator {
     private static final int LOGIN_MAXIMUM_CHARS = 16;
     private static final int PASSWORD_MINIMUM_CHARS = 4;
     private static final int PASSWORD_MAXIMUM_CHARS = 20;
+
+    private static final String LOGIN_VALUE = "login";
+    private static final String EMAIL_VALUE = "email";
+    private static final String PASSWORD_VALUE = "password";
+    private static final String CONFIRM_PASSWORD_VALUE = "confirmPassword";
+
+    private static final String REQUIRED_ERROR_CODE = "required";
 
     private final UserService userService;
 
@@ -38,31 +47,31 @@ public class UserValidator implements Validator {
         String confirmPassword = user.getConfirmPassword();
 
         //USER LOGIN VALIDATE
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "login", "required");
-        if (login.length() < LOGIN_MINIMUM_CHARS || login.length() >= LOGIN_MAXIMUM_CHARS) {
-            errors.rejectValue("login", "user-form.login.size");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, LOGIN_VALUE, REQUIRED_ERROR_CODE);
+        if (Objects.isNull(login) || login.length() < LOGIN_MINIMUM_CHARS || login.length() >= LOGIN_MAXIMUM_CHARS) {
+            errors.rejectValue(LOGIN_VALUE, "user-form.login.size");
         }
 
         //IS USER LOGIN NOT EXISTS VALIDATE
         if(userService.isLoginExists(login)){
-            errors.rejectValue("login", "user-form.login.exist");
+            errors.rejectValue(LOGIN_VALUE, "user-form.login.exist");
         }
 
         //USER EMAIL VALIDATE
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", "required");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, EMAIL_VALUE, REQUIRED_ERROR_CODE);
         if(!FormValidationUtils.validate(user.getEmail())) {
-            errors.rejectValue("email", "user-form.email.pattern");
+            errors.rejectValue(EMAIL_VALUE, "user-form.email.pattern");
         }
 
         //USER PASSWORD VALIDATE
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "required");
-        if(password.length() < PASSWORD_MINIMUM_CHARS || password.length() >= PASSWORD_MAXIMUM_CHARS){
-            errors.rejectValue("password", "user-form.password.size");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, PASSWORD_VALUE, REQUIRED_ERROR_CODE);
+        if(Objects.isNull(password) || password.length() < PASSWORD_MINIMUM_CHARS || password.length() >= PASSWORD_MAXIMUM_CHARS){
+            errors.rejectValue(PASSWORD_VALUE, "user-form.password.size");
         }
 
         //CONFIRM PASSWORD VALIDATE
-        if(!password.equals(confirmPassword)){
-            errors.rejectValue("confirmPassword", "user-form.password.different");
+        if(Objects.isNull(confirmPassword) || !password.equals(confirmPassword)){
+            errors.rejectValue(CONFIRM_PASSWORD_VALUE, "user-form.password.different");
         }
     }
 }

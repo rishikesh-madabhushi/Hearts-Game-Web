@@ -9,7 +9,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -21,8 +20,13 @@ import java.util.Arrays;
 @ComponentScan("com.llwantedll.webhearts")
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final CustomAuthenticationSuccessHandler successHandler;
+    private static final String[] CORS_ALLOWED_METHODS =
+            {"GET", "POST", "OPTIONS", "DELETE", "PUT", "PATCH"};
+    private static final String[] CORS_ALLOWED_HEADERS =
+            {"X-Requested-With", "Origin", "Content-Type", "Accept", "Authorization"};
+    private static final String CORS_ALLOWED_ORIGIN = "*";
 
+    private final CustomAuthenticationSuccessHandler successHandler;
     private final CustomAuthenticationFailHandler failHandler;
 
     @Autowired
@@ -45,7 +49,9 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/login", "/register").not().authenticated()
-                .antMatchers("/user").hasAnyAuthority(UserRole.ADMIN.name(), UserRole.USER.name())
+                .antMatchers("/user", "/create_room", "/game/*").hasAnyAuthority(UserRole.ADMIN.name(), UserRole.USER.name())
+                .and()
+                .authorizeRequests().antMatchers("/messages").permitAll()
                 .and()
                 .formLogin().usernameParameter("login").passwordParameter("password")
                 .loginPage("/login").successHandler(successHandler).failureHandler(failHandler)
@@ -61,14 +67,13 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        UrlBasedCorsConfigurationSource source = new
-                UrlBasedCorsConfigurationSource();
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 
-        corsConfiguration.addAllowedOrigin("*");
-        corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS", "DELETE", "PUT", "PATCH"));
-        corsConfiguration.setAllowedHeaders(Arrays.asList("X-Requested-With", "Origin", "Content-Type", "Accept", "Authorization"));
+        corsConfiguration.addAllowedOrigin(CORS_ALLOWED_ORIGIN);
+        corsConfiguration.setAllowedMethods(Arrays.asList(CORS_ALLOWED_METHODS));
+        corsConfiguration.setAllowedHeaders(Arrays.asList(CORS_ALLOWED_HEADERS));
         corsConfiguration.setAllowCredentials(true);
 
         source.registerCorsConfiguration("/**", corsConfiguration.applyPermitDefaultValues());
