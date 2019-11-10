@@ -35,13 +35,13 @@ public class ValidationErrorBuilderImpl implements ValidationErrorBuilder {
     }
 
     @Override
-    public String getErrorsText(BindingResult bindingResult) {
+    public ErrorWrapper getErrorsText(BindingResult bindingResult) {
         ResourceBundle bundle;
 
         try {
             bundle = getValidationBundle();
         } catch (MissingResourceException e) {
-            return "Failed to get errors resources!";
+            return new ErrorWrapper("Failed to get errors resources!");
         }
 
         StringJoiner stringJoiner = new StringJoiner(",");
@@ -50,7 +50,7 @@ public class ValidationErrorBuilderImpl implements ValidationErrorBuilder {
             stringJoiner.add(getErrorText(bundle, objectError));
         }
 
-        return stringJoiner.toString();
+        return new ErrorWrapper(stringJoiner.toString());
     }
 
     private List<String> getBasicErrorList(MissingResourceException e) {

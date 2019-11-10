@@ -8,12 +8,18 @@ import {RegisterComponent} from './register/register.component';
 import {HomeComponent} from './home/home.component';
 import {HttpClientModule} from "@angular/common/http";
 import {FormsModule} from "@angular/forms";
+import { GameSearchComponent } from './game-search/game-search.component';
+import { GameCreateComponent } from './game-create/game-create.component';
+import { GameComponent } from './game/game.component';
 
 const routes: Routes = [
   {path: '', pathMatch: 'full', redirectTo: 'home'},
   {path: 'home', component: HomeComponent},
   {path: 'login', component: LoginComponent},
-  {path: 'register', component: RegisterComponent}
+  {path: 'register', component: RegisterComponent},
+  {path: "search_game", component: GameSearchComponent},
+  {path: "create_game", component: GameCreateComponent},
+  {path: "game/:roomName", component: GameComponent},
 ];
 
 @NgModule({
@@ -21,7 +27,10 @@ const routes: Routes = [
     AppComponent,
     LoginComponent,
     RegisterComponent,
-    HomeComponent
+    HomeComponent,
+    GameSearchComponent,
+    GameCreateComponent,
+    GameComponent
   ],
   imports: [
     RouterModule.forRoot(routes),

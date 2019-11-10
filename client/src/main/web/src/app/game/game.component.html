@@ -1,0 +1,44 @@
+<div class="page-panel">
+  <div>
+    <span>Game room: </span>
+    <span class="h3">{{roomName}}</span>
+
+    <div>Minimum users to start the game {{minimumPlayers}}</div>
+    <div>Players: {{currentPlayers}}/{{maximumPlayers}}</div>
+    <div>Game: {{gameTitle}}</div>
+
+    <table class="table table-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Ready</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let player of players">
+        <td>{{player.login}}</td>
+        <td *ngIf="player.ready; else notReady" class="bg-success">{{player.ready}}</td>
+        <ng-template #notReady>
+          <td class="bg-warning">{{player.ready}}</td>
+          </ng-template>
+      </tr>
+      </tbody>
+    </table>
+
+    <form>
+      <div class="form-check">
+        <input id="game-room-ready-checkbox" type="checkbox"
+               class="form-check-input" (click)="getReady()"/>
+        <label class="form-check-label" for="game-room-ready-checkbox">Ready</label>
+
+      </div>
+    </form>
+  </div>
+
+  <form class="form-inline" style="margin-top: 20px;">
+    <button class="exit-game-room btn btn-secondary" type="button" (click)="disconnect()">Exit game</button>
+  </form>
+
+</div>
+
+

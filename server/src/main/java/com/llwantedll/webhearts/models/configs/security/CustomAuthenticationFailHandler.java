@@ -13,6 +13,8 @@ import java.io.IOException;
 public class CustomAuthenticationFailHandler implements AuthenticationFailureHandler {
     @Override
     public void onAuthenticationFailure(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException, ServletException {
-        httpServletResponse.getWriter().print(false);
+        httpServletResponse
+                .getWriter()
+                .print(false);
     }
 }

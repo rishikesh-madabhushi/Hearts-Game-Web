@@ -1,13 +1,15 @@
 package com.llwantedll.webhearts.models.entities;
 
+import com.llwantedll.webhearts.models.configs.ConfigurationData;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Document(collection = "user")
 public class User implements Serializable {
@@ -15,17 +17,23 @@ public class User implements Serializable {
     @Id
     private ObjectId id;
 
-    @Indexed(unique = true)
+    @Indexed(unique = true, sparse = true)
     private String login;
 
     private String password;
 
-    private Set<Role> roles;
+    @DBRef(lazy = true)
+    private List<Role> roles;
 
+    @Indexed(unique = true, sparse = true)
     private String email;
 
+    @DBRef(lazy = true)
+    private List<GameRoom> gameRooms;
+
     public User() {
-        roles = new HashSet<>();
+        roles = new ArrayList<>();
+        gameRooms = new ArrayList<>();
     }
 
     public ObjectId getId() {
@@ -44,11 +52,11 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    public Set<Role> getRoles() {
+    public List<Role> getRoles() {
         return roles;
     }
 
-    public void setRoles(Set<Role> roles) {
+    public void setRoles(List<Role> roles) {
         this.roles = roles;
     }
 
@@ -70,5 +78,17 @@ public class User implements Serializable {
 
     public void setId(ObjectId id) {
         this.id = id;
+    }
+
+    public List<GameRoom> getGameRooms() {
+        return gameRooms;
+    }
+
+    public void setGameRoom(GameRoom gameRoom) {
+        this.gameRooms.add(gameRoom);
+    }
+
+    public void setGameRooms(List<GameRoom> gameRooms) {
+        this.gameRooms = gameRooms;
     }
 }

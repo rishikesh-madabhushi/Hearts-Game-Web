@@ -8,5 +8,5 @@ import java.util.List;
 @Service
 public interface ValidationErrorBuilder {
     List<String> getErrors(BindingResult bindingResult);
-    String getErrorsText(BindingResult bindingResult);
+    ErrorWrapper getErrorsText(BindingResult bindingResult);
 }

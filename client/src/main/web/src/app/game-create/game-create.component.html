@@ -1,0 +1,35 @@
+<div class="page-panel">
+  <div class="error-msg-holder">
+
+  </div>
+
+  <form (ngSubmit)="f.form.valid && create()" #f="ngForm" novalidate>
+    <div class="form-group">
+      <label for="game-room-name-input">Game room name</label>
+      <input id="game-room-name-input" [(ngModel)]="model.name" #name="ngModel" type="text" name="name"
+             class="form-control"/>
+    </div>
+
+    <div class="form-group">
+      <label for="game-room-game-select">Game</label>
+      <select id="game-room-game-select" [(ngModel)]="model.gameTitle" #gameTitle="ngModel" class="form-control"
+              name="gameTitle">
+        <option>Standard Hearts</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="game-room-password-input">Password</label>
+      <input id="game-room-password-input" [(ngModel)]="model.password" #password="ngModel" type="password" class="form-control"
+             name="password"/>
+    </div>
+
+    <div class="form-group">
+      <input type="submit" class="btn btn-primary" value="Submit" [disabled]="loading"/>
+    </div>
+
+    <p>
+      <button class="btn btn-default" [routerLink]="['/']">Back</button>
+    </p>
+  </form>
+</div>

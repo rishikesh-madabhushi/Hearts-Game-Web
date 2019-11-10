@@ -1,1 +1,48 @@
-<p>register works!</p>
+<div class="page-container">
+
+  <div class="error-msg-holder">
+
+  </div>
+
+  <div class="main-menu">
+    <div class="menu-content">
+      <form id="user-register-form" name="registration-form" (ngSubmit)="f.form.valid && register()" #f="ngForm"
+            novalidate>
+
+        <div class="form-group">
+          <label for="user-reg-form-login">Username</label>
+          <input name="username" [(ngModel)]="model.username" #username="ngModel" id="user-reg-form-login" type="text"
+                 class="form-control"/>
+        </div>
+
+        <div class="form-group">
+          <label for="user-reg-form-password">Password</label>
+          <input name="password" [(ngModel)]="model.password" #password="ngModel" id="user-reg-form-password"
+                 type="password" class="form-control"/>
+        </div>
+
+        <div class="form-group">
+          <label for="user-reg-form-confirm-password">Confirm password</label>
+          <input name="confirmPassword" [(ngModel)]="model.confirmPassword" #confirmPassword="ngModel"
+                 id="user-reg-form-confirm-password" type="password" class="form-control"/>
+        </div>
+
+        <div class="form-group">
+          <label for="user-reg-form-email">Email</label>
+          <input name="email" [(ngModel)]="model.email" #email="ngModel" id="user-reg-form-email" type="email"
+                 class="form-control"/>
+        </div>
+
+        <p>
+          <button type="submit" class="btn btn-primary" [disabled]="loading">Register</button>
+        </p>
+
+        <p>
+          <button class="btn btn-default" [routerLink]="['/']">Back</button>
+        </p>
+
+      </form>
+    </div>
+  </div>
+
+</div>

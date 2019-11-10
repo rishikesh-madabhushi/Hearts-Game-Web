@@ -1,48 +1,31 @@
-import { Component, OnInit } from '@angular/core';
+///<reference path="../app.component.ts"/>
+import {Component, OnInit} from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Observable} from "rxjs/index";
 import {ActivatedRoute, Router} from "@angular/router";
+import * as $ from 'jquery';
+import {AppComponent} from "../app.component";
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
 
   userName: string;
 
-  constructor(private http: HttpClient,
-              private route: ActivatedRoute,
-              private router: Router) {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private http: HttpClient
+  ) { }
 
   ngOnInit() {
-    let url = 'http://localhost:8080/user';
+    let appComponent = new AppComponent(this.route, this.router, this.http);
 
-    let tokenItem = sessionStorage.getItem('token');
-
-    if(!tokenItem){
-      this.router.navigate(['/login']);
-      return;
-    }
-
-    let headers: HttpHeaders = new HttpHeaders({
-      'Authorization': 'Basic ' + tokenItem
-    });
-
-    let options = { headers: headers };
-    this.http.post<Observable<Object>>(url, {}, options).
-    subscribe(principal => {
-        this.userName = principal['name'];
-      },
-      error => {
-        if(error.status == 401) {
-          this.router.navigate(['/login']);
-        }
-
-      }
-    );
-  }
+    appComponent.checkAuthentication(this);
+  };
 
   logout() {
     sessionStorage.setItem('token', '');

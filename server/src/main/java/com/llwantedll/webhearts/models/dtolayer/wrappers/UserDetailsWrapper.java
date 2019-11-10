@@ -1,12 +1,12 @@
 package com.llwantedll.webhearts.models.dtolayer.wrappers;
 
-import java.util.Set;
+import java.util.List;
 
 public class UserDetailsWrapper {
     private String login;
     private String password;
     private String email;
-    private Set<RoleWrapper> roles;
+    private List<RoleWrapper> roles;
 
     public UserDetailsWrapper() {
     }
@@ -27,11 +27,11 @@ public class UserDetailsWrapper {
         this.email = email;
     }
 
-    public Set<RoleWrapper> getRoles() {
+    public List<RoleWrapper> getRoles() {
         return roles;
     }
 
-    public void setRoles(Set<RoleWrapper> roles) {
+    public void setRoles(List<RoleWrapper> roles) {
         this.roles = roles;
     }
 
