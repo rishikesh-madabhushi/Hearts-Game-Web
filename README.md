@@ -6,7 +6,7 @@ Used technologies: Java, Spring Boot (Security, Web, Data), MongoDB, Angular, So
 1. User login and registration
 2. Game room create and search
 3. Game room player readiness
-4. Own Java Game API with implemented Web Hearts model logic.
+4. Own Java Game API with implemented Hearts game model logic.
 5. Started/In progress controllers and visual side of the game.
 
 # TODO
