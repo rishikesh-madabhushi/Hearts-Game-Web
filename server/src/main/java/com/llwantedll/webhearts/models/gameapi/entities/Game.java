@@ -1,7 +1,7 @@
 package com.llwantedll.webhearts.models.gameapi.entities;
 
 import com.llwantedll.webhearts.models.entities.User;
-import com.llwantedll.webhearts.models.gameapi.FullRoomException;
+import com.llwantedll.webhearts.models.gameapi.exceptions.FullRoomException;
 
 import java.util.List;
 

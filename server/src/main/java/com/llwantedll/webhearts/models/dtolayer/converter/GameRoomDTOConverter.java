@@ -38,6 +38,7 @@ public class GameRoomDTOConverter implements DTOConverter<GameRoom, GameRoomWrap
         gameSession.setMaxPlayers(entity.getMaxPlayers());
         gameSession.setMinPlayers(entity.getMinPlayers());
         gameSession.setStartDate(dateFormat.format(entity.getStartedDate()));
+        gameSession.setStatus(entity.getStatus());
 
         return gameSession;
     }

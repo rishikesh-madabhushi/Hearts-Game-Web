@@ -13,6 +13,7 @@ import java.util.Optional;
 
 @Document(collection = "game_room")
 public class GameRoom {
+
     @Id
     private ObjectId id;
 
@@ -64,17 +65,6 @@ public class GameRoom {
 
     public List<User> getUsers() {
         return users;
-    }
-
-    public void removeUser(User user) {
-        String givenUserId = user.getId().toString();
-
-        Optional<User> first = this.users
-                .stream()
-                .filter(e -> e.getId().toString().equals(givenUserId))
-                .findFirst();
-
-        first.ifPresent(userFromSet -> this.users.remove(userFromSet));
     }
 
     public void setUser(User user) {

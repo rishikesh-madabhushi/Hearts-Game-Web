@@ -1,5 +1,5 @@
 <div class="page-panel">
-  <div>
+  <div class="game-phase-container preparation-game-room-phase">
     <span>Game room: </span>
     <span class="h3">{{roomName}}</span>
 
@@ -20,7 +20,7 @@
         <td *ngIf="player.ready; else notReady" class="bg-success">{{player.ready}}</td>
         <ng-template #notReady>
           <td class="bg-warning">{{player.ready}}</td>
-          </ng-template>
+        </ng-template>
       </tr>
       </tbody>
     </table>
@@ -35,8 +35,20 @@
     </form>
   </div>
 
+  <div class="game-phase-container started-game-room-phase">
+    <canvas id="game-canvas" width="{{canvasProperties.width}}" height="{{canvasProperties.height}}">
+
+    </canvas>
+  </div>
+
+  <div class="game-phase-container finished-game-room-phase">
+    <h1>Game has finished</h1>
+  </div>
+
   <form class="form-inline" style="margin-top: 20px;">
-    <button class="exit-game-room btn btn-secondary" type="button" (click)="disconnect()">Exit game</button>
+    <button class="exit-game-room btn btn-secondary" type="button" (click)="disconnect()" [routerLink]="['/']">
+      Exit game
+    </button>
   </form>
 
 </div>

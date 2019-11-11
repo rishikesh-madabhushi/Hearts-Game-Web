@@ -17,8 +17,11 @@ public class GameRoomValidator implements Validator {
     private static final int NAME_MAXIMUM_CHARS = 16;
     private static final int PASSWORD_MINIMUM_CHARS = 0;
     private static final int PASSWORD_MAXIMUM_CHARS = 20;
+
     private static final String NAME_VALUE = "name";
     private static final String PASSWORD_VALUE = "password";
+
+    private static final String REQUIRED_ERROR_CODE = "required";
 
     private final GameRoomService gameRoomService;
 
@@ -39,7 +42,7 @@ public class GameRoomValidator implements Validator {
         String name = gameRoomForm.getName();
         String password = gameRoomForm.getPassword();
 
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, NAME_VALUE, "required");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, NAME_VALUE, REQUIRED_ERROR_CODE);
         if (Objects.isNull(name) || name.length() < NAME_MINIMUM_CHARS || name.length() >= NAME_MAXIMUM_CHARS) {
             errors.rejectValue(NAME_VALUE, "game-room-form.name.size");
         }

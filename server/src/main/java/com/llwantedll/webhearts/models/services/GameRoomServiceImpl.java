@@ -3,13 +3,16 @@ package com.llwantedll.webhearts.models.services;
 import com.llwantedll.webhearts.models.dtolayer.converter.DTOConverter;
 import com.llwantedll.webhearts.models.dtolayer.wrappers.GameRoomDetailsWrapper;
 import com.llwantedll.webhearts.models.dtolayer.wrappers.GameRoomForm;
-import com.llwantedll.webhearts.models.dtolayer.wrappers.GameRoomWrapper;
 import com.llwantedll.webhearts.models.dtolayer.wrappers.PaginatedWrapper;
 import com.llwantedll.webhearts.models.entities.GameRoom;
 import com.llwantedll.webhearts.models.entities.User;
 import com.llwantedll.webhearts.models.gameapi.*;
 import com.llwantedll.webhearts.models.gameapi.entities.Game;
 import com.llwantedll.webhearts.models.gameapi.entities.GameDetails;
+import com.llwantedll.webhearts.models.gameapi.entities.Player;
+import com.llwantedll.webhearts.models.gameapi.exceptions.FullRoomException;
+import com.llwantedll.webhearts.models.gameapi.exceptions.NoGameFoundException;
+import com.llwantedll.webhearts.models.gameapi.exceptions.UserAlreadyInGameRoomException;
 import com.llwantedll.webhearts.models.repositories.GameRoomRepository;
 import com.llwantedll.webhearts.models.repositories.UserRepository;
 import org.slf4j.Logger;
@@ -23,7 +26,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,21 +44,17 @@ public class GameRoomServiceImpl implements GameRoomService {
 
     private final BCryptPasswordEncoder encoder;
 
-    private final DTOConverter<GameRoom, GameRoomWrapper> gameRoomDTOConverter;
-
     private final DTOConverter<GameRoom, GameRoomDetailsWrapper> gameRoomDetailsDTOConverter;
 
     @Autowired
     public GameRoomServiceImpl(GameRoomRepository gameRoomRepository,
                                UserRepository userRepository, GameMapper gameMapper,
                                BCryptPasswordEncoder encoder,
-                               DTOConverter<GameRoom, GameRoomWrapper> gameRoomDTOConverter,
                                DTOConverter<GameRoom, GameRoomDetailsWrapper> gameRoomDetailsDTOConverter) {
         this.gameRoomRepository = gameRoomRepository;
         this.userRepository = userRepository;
         this.gameMapper = gameMapper;
         this.encoder = encoder;
-        this.gameRoomDTOConverter = gameRoomDTOConverter;
         this.gameRoomDetailsDTOConverter = gameRoomDetailsDTOConverter;
     }
 
@@ -98,7 +97,10 @@ public class GameRoomServiceImpl implements GameRoomService {
 
     @Override
     public void leaveUser(GameRoom gameRoom, User user) throws NoGameFoundException {
-        gameRoom.removeUser(user);
+
+        String givenUserId = user.getId().toString();
+
+        removeUserFromGameRoomArray(gameRoom, givenUserId);
 
         if (gameRoom.getUsers().isEmpty()) {
             gameRoom.setStatus(GameStatus.FINISHED.name());
@@ -109,11 +111,22 @@ public class GameRoomServiceImpl implements GameRoomService {
         gameRoomRepository.save(gameRoom);
     }
 
+    private void removeUserFromGameRoomArray(GameRoom gameRoom, String givenUserId) {
+        List<User> users = gameRoom.getUsers();
+
+        Optional<User> first = users
+                .stream()
+                .filter(e -> e.getId().toString().equals(givenUserId))
+                .findFirst();
+
+        first.ifPresent(userFromSet -> gameRoom.getUsers().remove(userFromSet));
+    }
+
     @Override
     public Game getGame(GameRoom gameRoom) throws NoGameFoundException {
         try {
             return (Game) gameRoom.getGameData();
-        } catch (ClassCastException e){
+        } catch (ClassCastException e) {
             throw new NoGameFoundException();
         }
     }
@@ -174,5 +187,23 @@ public class GameRoomServiceImpl implements GameRoomService {
     public GameRoom saveGame(GameRoom gameRoom, Object serializedDetails) {
         gameRoom.setGameData(serializedDetails);
         return gameRoomRepository.save(gameRoom);
+    }
+
+    @Override
+    public GameRoom saveRoom(GameRoom gameRoom) {
+        return gameRoomRepository.save(gameRoom);
+    }
+
+    @Override
+    public boolean isReadyToStart(GameRoom gameRoom) throws NoGameFoundException {
+        Game game = getGame(gameRoom);
+
+        List<Player> players = game.getPlayers();
+
+        boolean allReady = players.stream().allMatch(Player::isReady);
+
+        boolean moreThanMinPlayers = players.size() >= gameRoom.getMinPlayers();
+
+        return allReady && moreThanMinPlayers;
     }
 }

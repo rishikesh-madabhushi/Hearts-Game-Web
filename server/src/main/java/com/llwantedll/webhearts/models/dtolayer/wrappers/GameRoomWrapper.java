@@ -8,6 +8,7 @@ public class GameRoomWrapper {
     private int minPlayers;
     private boolean hasPassword;
     private String startDate;
+    private String status;
 
     public GameRoomWrapper() {
     }
@@ -66,5 +67,13 @@ public class GameRoomWrapper {
 
     public void setGameData(Object gameData) {
         this.gameData = gameData;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
