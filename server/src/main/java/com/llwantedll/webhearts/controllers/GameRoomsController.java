@@ -8,9 +8,9 @@ import com.llwantedll.webhearts.models.dtolayer.wrappers.GameRoomForm;
 import com.llwantedll.webhearts.models.dtolayer.wrappers.GameRoomWrapper;
 import com.llwantedll.webhearts.models.dtolayer.wrappers.PaginatedWrapper;
 import com.llwantedll.webhearts.models.entities.GameRoom;
-import com.llwantedll.webhearts.models.gameapi.FullRoomException;
-import com.llwantedll.webhearts.models.gameapi.NoGameFoundException;
-import com.llwantedll.webhearts.models.gameapi.UserAlreadyInGameRoomException;
+import com.llwantedll.webhearts.models.gameapi.exceptions.FullRoomException;
+import com.llwantedll.webhearts.models.gameapi.exceptions.NoGameFoundException;
+import com.llwantedll.webhearts.models.gameapi.exceptions.UserAlreadyInGameRoomException;
 import com.llwantedll.webhearts.models.services.AuthenticationService;
 import com.llwantedll.webhearts.models.services.GameRoomService;
 import com.llwantedll.webhearts.models.validators.GameRoomValidator;
@@ -34,7 +34,6 @@ public class GameRoomsController {
     private final AuthenticationService authenticationService;
 
     private final DTOConverter<GameRoom, GameRoomWrapper> gameRoomDTOConverter;
-    private final DTOConverter<GameRoom, GameRoomDetailsWrapper> gameRoomDetailsDTOConverter;
 
     private final ValidationErrorBuilder validationErrorBuilder;
 
@@ -44,13 +43,11 @@ public class GameRoomsController {
     public GameRoomsController(GameRoomService gameRoomService,
                                AuthenticationService authenticationService,
                                DTOConverter<GameRoom, GameRoomWrapper> gameRoomDTOConverter,
-                               DTOConverter<GameRoom, GameRoomDetailsWrapper> gameRoomDetailsDTOConverter,
                                ValidationErrorBuilder validationErrorBuilder,
                                GameRoomValidator gameRoomValidator) {
         this.gameRoomService = gameRoomService;
         this.authenticationService = authenticationService;
         this.gameRoomDTOConverter = gameRoomDTOConverter;
-        this.gameRoomDetailsDTOConverter = gameRoomDetailsDTOConverter;
         this.validationErrorBuilder = validationErrorBuilder;
         this.gameRoomValidator = gameRoomValidator;
     }

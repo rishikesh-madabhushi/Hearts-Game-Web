@@ -4,17 +4,13 @@ import com.llwantedll.webhearts.models.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCrypt;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.socket.messaging.SessionConnectEvent;
 
 import java.security.Principal;
 import java.util.HashSet;
@@ -26,17 +22,9 @@ public class WebSocketAuthenticationServiceImpl implements WebSocketAuthenticati
 
     private final UserService userService;
 
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
-
-    private final AuthenticationManager authenticationManager;
-
     @Autowired
-    public WebSocketAuthenticationServiceImpl(UserService userService,
-                                              BCryptPasswordEncoder bCryptPasswordEncoder,
-                                              AuthenticationManager authenticationManager) {
+    public WebSocketAuthenticationServiceImpl(UserService userService) {
         this.userService = userService;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.authenticationManager = authenticationManager;
     }
 
     @Override
@@ -70,13 +58,13 @@ public class WebSocketAuthenticationServiceImpl implements WebSocketAuthenticati
     public User getRemote(SimpMessageHeaderAccessor headerAccessor) throws AuthenticationException {
         Principal principalUser = headerAccessor.getUser();
 
-        if(Objects.isNull(principalUser)){
+        if (Objects.isNull(principalUser)) {
             throw new AuthenticationCredentialsNotFoundException("No remote principal was found");
         }
 
         User user = userService.getByLogin(principalUser.getName());
 
-        if(Objects.isNull(user)){
+        if (Objects.isNull(user)) {
             throw new AuthenticationCredentialsNotFoundException("No such principal username was found in the database");
         }
 

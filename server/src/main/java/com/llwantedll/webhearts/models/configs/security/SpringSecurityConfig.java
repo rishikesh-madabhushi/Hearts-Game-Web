@@ -1,5 +1,7 @@
 package com.llwantedll.webhearts.models.configs.security;
 
+import com.llwantedll.webhearts.models.configs.ConfigurationData;
+import com.llwantedll.webhearts.models.configs.PathConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -20,11 +22,8 @@ import java.util.Arrays;
 @ComponentScan("com.llwantedll.webhearts")
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private static final String[] CORS_ALLOWED_METHODS =
-            {"GET", "POST", "OPTIONS", "DELETE", "PUT", "PATCH"};
-    private static final String[] CORS_ALLOWED_HEADERS =
-            {"X-Requested-With", "Origin", "Content-Type", "Accept", "Authorization"};
-    private static final String CORS_ALLOWED_ORIGIN = "*";
+    private static final String USERNAME_PARAMETER = "login";
+    private static final String PASSWORD_PARAMETER = "password";
 
     private final CustomAuthenticationSuccessHandler successHandler;
     private final CustomAuthenticationFailHandler failHandler;
@@ -48,13 +47,22 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/login", "/register").not().authenticated()
-                .antMatchers("/user", "/create_room", "/game/*").hasAnyAuthority(UserRole.ADMIN.name(), UserRole.USER.name())
+                .antMatchers(
+                        PathConfiguration.LOGIN_PAGE,
+                        PathConfiguration.REGISTRATION_PAGE)
+                .not().authenticated()
+                .antMatchers(
+                        PathConfiguration.USER_CONTENT_PATH,
+                        PathConfiguration.CREATE_ROOM_PAGE,
+                        PathConfiguration.GAME_PATTERN_PATH)
+                .hasAnyAuthority(UserRole.ADMIN.name(), UserRole.USER.name())
                 .and()
-                .authorizeRequests().antMatchers("/messages").permitAll()
+                .authorizeRequests()
+                .antMatchers(PathConfiguration.STOMP_ENDPOINT)
+                .permitAll()
                 .and()
-                .formLogin().usernameParameter("login").passwordParameter("password")
-                .loginPage("/login").successHandler(successHandler).failureHandler(failHandler)
+                .formLogin().usernameParameter(USERNAME_PARAMETER).passwordParameter(PASSWORD_PARAMETER)
+                .loginPage(PathConfiguration.LOGIN_PAGE).successHandler(successHandler).failureHandler(failHandler)
                 .and()
                 .httpBasic();
     }
@@ -71,12 +79,12 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 
-        corsConfiguration.addAllowedOrigin(CORS_ALLOWED_ORIGIN);
-        corsConfiguration.setAllowedMethods(Arrays.asList(CORS_ALLOWED_METHODS));
-        corsConfiguration.setAllowedHeaders(Arrays.asList(CORS_ALLOWED_HEADERS));
+        corsConfiguration.addAllowedOrigin(ConfigurationData.CORS_ALLOWED_ORIGIN);
+        corsConfiguration.setAllowedMethods(Arrays.asList(ConfigurationData.CORS_ALLOWED_METHODS));
+        corsConfiguration.setAllowedHeaders(Arrays.asList(ConfigurationData.CORS_ALLOWED_HEADERS));
         corsConfiguration.setAllowCredentials(true);
 
-        source.registerCorsConfiguration("/**", corsConfiguration.applyPermitDefaultValues());
+        source.registerCorsConfiguration(ConfigurationData.CORS_CONFIGURATION_PATH, corsConfiguration.applyPermitDefaultValues());
         return source;
     }
 }

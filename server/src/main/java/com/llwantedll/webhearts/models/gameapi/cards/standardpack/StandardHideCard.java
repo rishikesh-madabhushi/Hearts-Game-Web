@@ -3,21 +3,21 @@ package com.llwantedll.webhearts.models.gameapi.cards.standardpack;
 import com.llwantedll.webhearts.models.gameapi.cards.Card;
 
 public class StandardHideCard implements Card {
-    private StandardHideSuit standardHideSuit;
-    private StandardHideRank standardHideRank;
+    private StandardHideSuit standardCardSuit;
+    private StandardHideRank standardCardRank;
 
     public StandardHideCard() {
-        this.standardHideSuit = StandardHideSuit.HIDE_SUIT;
-        this.standardHideRank = new StandardHideRank();
+        this.standardCardSuit = StandardHideSuit.HIDE_SUIT;
+        this.standardCardRank = StandardHideRank.HIDE_RANK;
     }
 
     @Override
     public StandardHideRank getCardRank() {
-        return standardHideRank;
+        return standardCardRank;
     }
 
     @Override
     public StandardHideSuit getCardSuit() {
-        return standardHideSuit;
+        return standardCardSuit;
     }
 }

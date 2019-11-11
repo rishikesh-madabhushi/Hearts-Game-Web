@@ -2,19 +2,15 @@ package com.llwantedll.webhearts.controllers;
 
 import com.google.gson.Gson;
 import com.llwantedll.webhearts.models.configs.ConfigurationData;
-import com.llwantedll.webhearts.models.dtolayer.converter.DTOConverter;
+import com.llwantedll.webhearts.models.configs.PathConfiguration;
 import com.llwantedll.webhearts.models.dtolayer.wrappers.GameRoomWrapper;
-import com.llwantedll.webhearts.models.entities.GameRoom;
 import com.llwantedll.webhearts.models.entities.User;
-import com.llwantedll.webhearts.models.gameapi.FullRoomException;
-import com.llwantedll.webhearts.models.gameapi.NoGameFoundException;
-import com.llwantedll.webhearts.models.gameapi.NoPlayerFoundException;
-import com.llwantedll.webhearts.models.gameapi.UserAlreadyInGameRoomException;
-import com.llwantedll.webhearts.models.gameapi.games.hearts.standardpack.StandardHeartsGame;
-import com.llwantedll.webhearts.models.gameapi.games.hearts.standardpack.StandardHeartsGamePlayer;
-import com.llwantedll.webhearts.models.gameapi.games.hearts.standardpack.services.GameFlowService;
+import com.llwantedll.webhearts.models.gameapi.exceptions.FullRoomException;
+import com.llwantedll.webhearts.models.gameapi.exceptions.NoGameFoundException;
+import com.llwantedll.webhearts.models.gameapi.exceptions.NoPlayerFoundException;
+import com.llwantedll.webhearts.models.gameapi.exceptions.UserAlreadyInGameRoomException;
+import com.llwantedll.webhearts.models.gameapi.games.hearts.standardpack.services.StandardHeartsGameService;
 import com.llwantedll.webhearts.models.services.AuthenticationService;
-import com.llwantedll.webhearts.models.services.GameRoomService;
 import com.llwantedll.webhearts.models.services.WebSocketAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
@@ -31,7 +27,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
-import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import java.nio.file.attribute.UserPrincipalNotFoundException;
 import java.util.Objects;
@@ -41,33 +36,25 @@ import java.util.Objects;
 public class StandardWebHeartsSocketController {
 
     private static final String ROOM_NAME_HEADER = "roomName";
-    private static final String READY_FLAG = "true";
     private static final String READY_ATTRIBUTE = "ready";
+    private static final String READY_FLAG = "true";
 
     private final SimpMessagingTemplate template;
 
-    private final GameRoomService gameRoomService;
-
-    private final GameFlowService gameFlowService;
-
-    private final WebSocketAuthenticationService webSocketAuthenticationService;
-
-    private final DTOConverter<GameRoom, GameRoomWrapper> gameRoomDTOConverter;
-
+    private final StandardHeartsGameService standardHeartsGameService;
 
     private final AuthenticationService authenticationService;
 
+    private final WebSocketAuthenticationService webSocketAuthenticationService;
+
     @Autowired
     public StandardWebHeartsSocketController(SimpMessagingTemplate template,
-                                             GameRoomService gameRoomService,
-                                             GameFlowService gameFlowService,
+                                             StandardHeartsGameService standardHeartsGameService,
                                              WebSocketAuthenticationService webSocketAuthenticationService,
-                                             DTOConverter<GameRoom, GameRoomWrapper> gameRoomDTOConverter, AuthenticationService authenticationService) {
+                                             AuthenticationService authenticationService) {
         this.template = template;
-        this.gameRoomService = gameRoomService;
-        this.gameFlowService = gameFlowService;
+        this.standardHeartsGameService = standardHeartsGameService;
         this.webSocketAuthenticationService = webSocketAuthenticationService;
-        this.gameRoomDTOConverter = gameRoomDTOConverter;
         this.authenticationService = authenticationService;
     }
 
@@ -76,75 +63,35 @@ public class StandardWebHeartsSocketController {
             produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     public ResponseEntity getGameInfo(@PathVariable("gameRoom") String gameRoomTitle) throws UserPrincipalNotFoundException, NoPlayerFoundException, NoGameFoundException {
         User remoteUser = authenticationService.getRemoteUser();
+        GameRoomWrapper gameDetails = standardHeartsGameService.getGameDetails(gameRoomTitle, remoteUser);
 
-        StandardHeartsGame standardHeartsGame = getStandardHeartsGame(gameRoomTitle);
-
-        StandardHeartsGamePlayer playerByUser = gameFlowService.getPlayerByUser(standardHeartsGame, remoteUser);
-
-        StandardHeartsGame cardHidedGame = gameFlowService.hideOtherUserCards(standardHeartsGame, playerByUser);
-
-        GameRoom byName = gameRoomService.getByName(gameRoomTitle);
-
-        if (Objects.isNull(byName)) {
-            throw new NoGameFoundException();
-        }
-
-        byName.setGameData(cardHidedGame);
-
-        return ResponseEntity.ok(new Gson().toJson(gameRoomDTOConverter.backward(byName)));
+        return ResponseEntity.ok(new Gson().toJson(gameDetails));
     }
 
     @MessageMapping({"/game_room/{gameRoom}/ready"})
     public void getReady(@DestinationVariable("gameRoom") String gameRoomTitle,
                          Message<?> message) throws UserPrincipalNotFoundException, NoPlayerFoundException, NoGameFoundException {
         SimpMessageHeaderAccessor headers = SimpMessageHeaderAccessor.wrap(message);
-
-        StandardHeartsGame standardHeartsGame = getStandardHeartsGame(gameRoomTitle);
-
         String readyString = headers.getFirstNativeHeader(READY_ATTRIBUTE);
-
-        GameRoom byName = gameRoomService.getByName(gameRoomTitle);
-
-        if (Objects.isNull(byName)) {
-            throw new NoGameFoundException();
-        }
-
         User remoteUser = webSocketAuthenticationService.getRemote(headers);
-
         boolean ready = Objects.nonNull(readyString) && readyString.equals(READY_FLAG);
 
-        GameRoom gameRoom = gameFlowService.readyPlayer(byName, standardHeartsGame, gameFlowService.getPlayerByUser(standardHeartsGame, remoteUser), ready);
-
-        template.convertAndSend("/topic/message/" + gameRoomTitle, gameRoomDTOConverter.backward(gameRoom));
+        template.convertAndSend(PathConfiguration.WEBSOCKET_TOPIC_PREFIX + gameRoomTitle, standardHeartsGameService.readyUser(ready, gameRoomTitle, remoteUser));
     }
 
-    private StandardHeartsGame getStandardHeartsGame(String gameRoom) {
-        GameRoom byName = gameRoomService.getByName(gameRoom);
-        return (StandardHeartsGame) byName.getGameData();
-    }
 
     @EventListener
     private void handleSessionConnected(SessionConnectEvent event) throws AuthenticationException, NoGameFoundException, UserAlreadyInGameRoomException, FullRoomException {
         SimpMessageHeaderAccessor headers = SimpMessageHeaderAccessor.wrap(event.getMessage());
-
         User remoteUser = webSocketAuthenticationService.getRemote(headers);
+        String gameRoomTitle = headers.getFirstNativeHeader(ROOM_NAME_HEADER);
 
-        Object roomName = headers.getFirstNativeHeader(ROOM_NAME_HEADER);
-
-        if (Objects.isNull(roomName)) {
-            throw new NoGameFoundException();
-        }
-
-        GameRoom byName = gameRoomService.getByName(roomName.toString());
-
-        if (Objects.isNull(byName)) {
-            throw new NoGameFoundException();
-        }
-
-        gameRoomService.join(byName, remoteUser);
-
-        template.convertAndSend("/topic/message/" + roomName.toString(), getStandardHeartsGame(roomName.toString()));
+        template.convertAndSend(PathConfiguration.WEBSOCKET_TOPIC_PREFIX + gameRoomTitle, standardHeartsGameService.connectUser(gameRoomTitle, remoteUser));
     }
+
+ /*
+    //THIS IS DISCONNECT EVENT LISTENER THAT WORKS WITH DELAY
+    //AND CAUSE TROUBLES WITH PAGE REFRESH AND RECONNECT
 
     @EventListener
     private void handleSessionDisconnected(SessionDisconnectEvent event) throws NoGameFoundException, UserPrincipalNotFoundException {
@@ -154,10 +101,10 @@ public class StandardWebHeartsSocketController {
 
         gameRoomService.leaveAllByUser(remoteUser);
         globalUpdateSign();
-    }
 
     private void globalUpdateSign() {
         template.convertAndSend("/topic/message/global/update", true);
     }
+    }*/
 
 }

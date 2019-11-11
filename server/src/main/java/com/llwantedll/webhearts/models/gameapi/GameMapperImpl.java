@@ -1,6 +1,7 @@
 package com.llwantedll.webhearts.models.gameapi;
 
 import com.llwantedll.webhearts.models.gameapi.entities.GameDetails;
+import com.llwantedll.webhearts.models.gameapi.exceptions.NoGameFoundException;
 import com.llwantedll.webhearts.models.gameapi.games.hearts.standardpack.StandardHeartsGame;
 import com.llwantedll.webhearts.models.gameapi.games.hearts.standardpack.StandardHeartsGameDetails;
 import org.springframework.stereotype.Component;

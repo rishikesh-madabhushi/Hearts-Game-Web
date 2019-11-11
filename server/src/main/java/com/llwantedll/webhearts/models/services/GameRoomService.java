@@ -5,37 +5,40 @@ import com.llwantedll.webhearts.models.dtolayer.wrappers.GameRoomForm;
 import com.llwantedll.webhearts.models.dtolayer.wrappers.PaginatedWrapper;
 import com.llwantedll.webhearts.models.entities.GameRoom;
 import com.llwantedll.webhearts.models.entities.User;
-import com.llwantedll.webhearts.models.gameapi.FullRoomException;
-import com.llwantedll.webhearts.models.gameapi.NoGameFoundException;
-import com.llwantedll.webhearts.models.gameapi.UserAlreadyInGameRoomException;
+import com.llwantedll.webhearts.models.gameapi.exceptions.FullRoomException;
+import com.llwantedll.webhearts.models.gameapi.exceptions.NoGameFoundException;
+import com.llwantedll.webhearts.models.gameapi.exceptions.UserAlreadyInGameRoomException;
 import com.llwantedll.webhearts.models.gameapi.entities.Game;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.attribute.UserPrincipalNotFoundException;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public interface GameRoomService {
-    GameRoom create(GameRoomForm gameRoomForm) throws NoGameFoundException, UserPrincipalNotFoundException;
-
     void join(GameRoom gameRoom, User name) throws UserAlreadyInGameRoomException, NoGameFoundException, FullRoomException;
 
     void leaveUser(GameRoom gameRoom, User user) throws NoGameFoundException;
 
+    void leaveAllByUser(User user);
+
     Game getGame(GameRoom gameRoom) throws NoGameFoundException;
 
-    void leaveAllByUser(User user);
+    GameRoom create(GameRoomForm gameRoomForm) throws NoGameFoundException, UserPrincipalNotFoundException;
 
     GameRoom getByName(String name);
 
-    boolean isExistByName(String name);
+    GameRoom saveGame(GameRoom gameRoom, Object serializedDetails);
+
+    GameRoom saveRoom(GameRoom gameRoom);
 
     List<GameRoom> getRoomsPage(int page);
 
-    long getOpenRoomsPagesCount();
-
     PaginatedWrapper<GameRoomDetailsWrapper> getOpenRoomsPaginated(int page);
 
-    GameRoom saveGame(GameRoom gameRoom, Object serializedDetails);
+    long getOpenRoomsPagesCount();
+
+    boolean isExistByName(String name);
+
+    boolean isReadyToStart(GameRoom gameRoom) throws NoGameFoundException;
 }

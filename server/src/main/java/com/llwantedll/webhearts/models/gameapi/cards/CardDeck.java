@@ -1,6 +1,6 @@
 package com.llwantedll.webhearts.models.gameapi.cards;
 
-import com.llwantedll.webhearts.models.gameapi.cards.exceptions.NoCardsInDeckException;
+import com.llwantedll.webhearts.models.gameapi.exceptions.NoCardsInDeckException;
 
 import java.util.Set;
 

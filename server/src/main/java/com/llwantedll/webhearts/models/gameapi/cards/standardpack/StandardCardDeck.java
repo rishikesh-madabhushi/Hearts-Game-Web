@@ -1,7 +1,7 @@
 package com.llwantedll.webhearts.models.gameapi.cards.standardpack;
 
 import com.llwantedll.webhearts.models.gameapi.cards.CardDeck;
-import com.llwantedll.webhearts.models.gameapi.cards.exceptions.NoCardsInDeckException;
+import com.llwantedll.webhearts.models.gameapi.exceptions.NoCardsInDeckException;
 
 import java.util.HashSet;
 import java.util.Iterator;

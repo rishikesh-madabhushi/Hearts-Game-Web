@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StandardHeartsGamePlayer implements Player {
-    private static final int CARDS_COUNT_AT_START = 13;
     private static final int LOSE_POINTS_FROM_START = 0;
 
     private final String login;
@@ -16,7 +15,9 @@ public class StandardHeartsGamePlayer implements Player {
 
     private int losePoints = LOSE_POINTS_FROM_START;
 
-    private List<Card> cards = new ArrayList<>(CARDS_COUNT_AT_START);
+    private List<Card> cards = new ArrayList<>();
+
+    private List<Card> holdCards = new ArrayList<>();
 
     public StandardHeartsGamePlayer(String login) {
         this.login = login;
@@ -59,5 +60,21 @@ public class StandardHeartsGamePlayer implements Player {
 
     public void setCards(List<Card> cards) {
         this.cards = cards;
+    }
+
+    public void setCard(Card card){
+        this.cards.add(card);
+    }
+
+    public List<Card> getHoldCards() {
+        return holdCards;
+    }
+
+    public void setHoldCard(Card card){
+        this.holdCards.add(card);
+    }
+
+    public void setHoldCards(List<Card> holdCards) {
+        this.holdCards = holdCards;
     }
 }

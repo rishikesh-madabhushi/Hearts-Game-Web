@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 public class ValidationErrorBuilderImpl implements ValidationErrorBuilder {
 
     private static final String ERRORS_RESOURCES_FAIL = "Failed to get errors resources!";
+    private static final String VALIDATION_ERRORS_BUNDLE_NAME = "validation-errors";
+
     private final Logger logger = LoggerFactory.getLogger(ValidationErrorBuilderImpl.class);
 
     @Override
@@ -61,7 +63,7 @@ public class ValidationErrorBuilderImpl implements ValidationErrorBuilder {
     }
 
     private ResourceBundle getValidationBundle() throws MissingResourceException{
-        return ResourceBundle.getBundle("validation-errors");
+        return ResourceBundle.getBundle(VALIDATION_ERRORS_BUNDLE_NAME);
     }
 
     private String getErrorText(ResourceBundle bundle, ObjectError e) {

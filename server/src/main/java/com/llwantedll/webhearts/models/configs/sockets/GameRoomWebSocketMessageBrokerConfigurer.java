@@ -1,6 +1,7 @@
 package com.llwantedll.webhearts.models.configs.sockets;
 
 import com.llwantedll.webhearts.models.configs.ConfigurationData;
+import com.llwantedll.webhearts.models.configs.PathConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
@@ -34,16 +35,16 @@ public class GameRoomWebSocketMessageBrokerConfigurer implements WebSocketMessag
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry
-                .addEndpoint("/messages")
+                .addEndpoint(PathConfiguration.STOMP_ENDPOINT)
                 .setHandshakeHandler(gameRoomHandshakeHandler)
-                .setAllowedOrigins("*")
+                .setAllowedOrigins(ConfigurationData.STOMP_ALLOWED_ORIGINS)
                 .withSockJS();
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.enableSimpleBroker("/queue/", "/topic/");
-        registry.setApplicationDestinationPrefixes("/app");
+        registry.setApplicationDestinationPrefixes(PathConfiguration.APP_DESTINATON_PREFIX);
     }
 
     @Override
