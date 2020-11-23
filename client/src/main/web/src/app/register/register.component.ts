@@ -36,7 +36,7 @@ export class RegisterComponent implements OnInit {
         next: () => this.router.navigate(['']),
         error: (data) => $(".error-msg-holder").html(
           "<div class='alert alert-danger alert-dismissible fade show' role='alert'>" +
-          "  <strong>Errors!</strong> " + data.error.split(",").join("<br>") +
+          "  <strong>Errors!</strong> " + data.error.error.split(',').join('<br/>') +
           "  <button type='button' class='close' data-dismiss='alert' aria-label='Close'>" +
           "    <span aria-hidden='true'>&times;</span>" +
           "  </button>" +

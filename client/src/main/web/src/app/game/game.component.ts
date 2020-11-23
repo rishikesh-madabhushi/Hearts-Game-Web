@@ -27,9 +27,10 @@ export class GameComponent implements OnInit {
   canvasProperties: any;
   private playerDrawCoords: any;
   private cardSize: any = {
-    width: 60,
-    height: 100
+    width: 72,
+    height: 120
   };
+  private card_offset = 13;
 
   constructor(private route: ActivatedRoute,
               private router: Router,
@@ -42,7 +43,7 @@ export class GameComponent implements OnInit {
 
     this.playerDrawCoords = {
       remote: {
-        x: this.canvasProperties.width / 5,
+        x: this.canvasProperties.width / 2 - (this.cardSize.width / 2),
         y: 4 * this.canvasProperties.height / 5
       },
       first: {
@@ -54,7 +55,7 @@ export class GameComponent implements OnInit {
         y: (this.canvasProperties.height / 5) - (this.cardSize.height / 2)
       },
       third: {
-        x: 4 * this.canvasProperties.width / 5,
+        x: 4 * this.canvasProperties.width / 5 - this.cardSize.width,
         y: this.canvasProperties.height / 2 - (this.cardSize.height / 2)
       }
     };
@@ -72,16 +73,16 @@ export class GameComponent implements OnInit {
 
     const _this = this;
 
-    const socket = new SockJS(baseUrl + "/messages", null,
-      {
+    const socket = new SockJS(baseUrl + "/messages");
+   /*   {
         headers: {
           'Authorization': 'Basic ' + sessionStorage.getItem('token')
         }
       }
-    );
-
+    );*/
+    var stompClient = this.stompClient;
     socket.onclose = function () {
-      this.stompClient.disconnect();
+      stompClient.disconnect();
     };
 
     this.stompClient = Stomp.Stomp.over(socket);
@@ -109,9 +110,9 @@ export class GameComponent implements OnInit {
         }
       });
     });
-
+    var stompClient = this.stompClient;
     $("body").on("unload", function () {
-      this.disconnect({roomName: _this.roomName});
+      stompClient.disconnect({roomName: _this.roomName});
     });
   }
 
@@ -131,6 +132,7 @@ export class GameComponent implements OnInit {
     ctx.fillRect(0, 0, _this.canvasProperties.width, _this.canvasProperties.height);
 
     let cardDeckCount = 0;
+    console.log(_this);
 
     $(_this.gameData.cardDeck.cards).each(function (e: any, d: any) {
       _this.drawCard(_this, ctx, 50 + cardDeckCount, 50 + cardDeckCount, d);
@@ -161,22 +163,27 @@ export class GameComponent implements OnInit {
   }
 
   private drawPlayerCards(_this, ctx, xSpot, ySpot, cards) {
-    $(cards).each(function (e, d) {
-      _this.drawCard(_this, ctx, xSpot, ySpot, d);
-    });
+	var promises = [];
+	$(cards).each(function(idx, card) {
+		promises.push(_this.loadCard(_this, idx, card));
+	});
+	Promise.all(promises).then((cards) => 
+		cards.forEach((card, index) => 
+			ctx.drawImage(card, xSpot + index * _this.card_offset,
+		              ySpot, _this.cardSize.width, _this.cardSize.height)
+	));
   }
 
-  private drawCard(_this, ctx, x, y, card) {
-    let cardDeckImage = new Image();
-
-    cardDeckImage.height = _this.cardSize.height;
-    cardDeckImage.width = _this.cardSize.width;
-
-    cardDeckImage.src = "assets/images/cards/" + card.standardCardRank + "_" + card.standardCardSuit + ".png";
-
-    cardDeckImage.onload = function () {
-      ctx.drawImage(cardDeckImage, x, y, _this.cardSize.width, _this.cardSize.height);
-    };
+  private loadCard(_this, idx, card) {
+  	return new Promise(resolve => {
+       const image = new Image();
+       image.height = _this.cardSize.height;
+       image.width = _this.cardSize.width;
+       image.addEventListener('load', () => {
+       	  resolve(image);
+       });
+ 	   image.src = "assets/images/cards/" + card.standardCardRank + "_" + card.standardCardSuit + ".png"; 
+    });
   }
 
   private updateStatusContainer(status) {

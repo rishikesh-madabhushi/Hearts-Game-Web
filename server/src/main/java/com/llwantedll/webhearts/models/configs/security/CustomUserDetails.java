@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-//THIS CLASS GIVES CUSTOM PROPERTIES FOR USER PRINCIPLE
+//THIS CLASS GIVES CUSTOM PROPERTIES FOR USER PRINCIPAL
 public class CustomUserDetails implements UserDetails {
 
     private final UserDetailsWrapper user;

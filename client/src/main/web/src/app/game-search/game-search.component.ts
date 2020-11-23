@@ -36,7 +36,7 @@ export class GameSearchComponent implements OnInit {
     this.http.get(url, options).subscribe({
       next: function (data: any) {
         $(".game-search-pagination-navigator")
-          .html(AppComponent.pagination(page, data.entitiesCount, this.goto));
+          .html(AppComponent.pagination(page, data.entitiesCount, this.goto).get(0));
         _this.entityPage = data.entityPage;
         _this.entitiesCount = data.entitiesCount;
       },

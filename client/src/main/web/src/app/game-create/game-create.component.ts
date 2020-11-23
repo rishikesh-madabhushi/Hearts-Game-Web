@@ -26,7 +26,6 @@ export class GameCreateComponent implements OnInit {
 
   create() {
     let url = 'http://localhost:8080/create_room';
-
     this.http.post(url, {
         name: this.model.name,
         password: this.model.password,
@@ -41,10 +40,9 @@ export class GameCreateComponent implements OnInit {
       .subscribe({
         next: () => this.router.navigate(['/game/' + this.model.name]),
         error: function (data) {
-
           let errors = data.error;
           let errorText = errors.error.split(",").join("<br>");
-
+		  console.log(data);
           $(".error-msg-holder").html(
             "<div class='alert alert-danger alert-dismissible fade show' role='alert'>" +
             "  <strong>Errors!</strong> " + errorText +
